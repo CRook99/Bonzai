@@ -4,7 +4,6 @@ import os
 class Slot(pygame.sprite.Sprite):
     filled = False
     tree = None
-    #DEFAULT_IMAGE = pygame.image.load(os.path.join("Assets", "Empty Slot.png"))
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)

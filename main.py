@@ -21,7 +21,7 @@ EXIT_ICON = pygame.image.load(os.path.join("Assets", "Exit Icon.png"))
 FRAMERATE = 60
 
  
-
+'''
 class Button:
     def __init__(self, x, y, width, height, label):
         self.x = x
@@ -39,8 +39,9 @@ class Button:
     def is_clicked(self, pos):
         if self.x <= pos[0] <= self.x + self.width and self.y <= pos[1] <= self.y + self.height:
             self.clicked = True
+'''
 
-
+TREES = []
 
 
         
@@ -49,16 +50,13 @@ def drawWindow():
     WIN.fill(SAND_COLOR)
     WIN.blit(BEEPUS, (400,400))
     WIN.blit(EXIT_ICON, (WIDTH - 50, 20))
+    for tree in TREES:
+        tree.drawTree(WIN)
     pygame.display.update()
 
 def main():
     tree1 = Tree(5, "Bonsai")
-    print(tree1.getName())
-
-    
-    
-
-   
+    TREES.append(tree1)
 
     run = True
     while run:
