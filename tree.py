@@ -8,10 +8,14 @@ class Tree:
     name = "X"
     counter = -1
     text = ""
+    xPos = -1
+    yPos = -1
 
     def __init__(self, value, name):
         self.value = value
         self.name = name
+        self.xPos = 0
+        self.yPos = 0
         self.counter, self.text = 120, '120'.rjust(3)
         pygame.time.set_timer(pygame.USEREVENT, 1000)
         self.font = pygame.font.SysFont('Consolas', 12)
@@ -22,6 +26,12 @@ class Tree:
     def getName(self):
         return self.name
 
+    def setPos(self, x, y):
+        self.xPos = x
+        self.yPos = y
+
+    
+
     def drawTree(self, screen):
         text = str(self.counter).rjust(
             3) if self.counter > 0 else 'Growth Complete!'
@@ -29,19 +39,7 @@ class Tree:
 
     def updateCounter(self):
         self.counter -= 1
-
+        
     def fertilize(self, amount):
         self.counter -= amount
-
-    '''
-    run = True
-    while run:
-        for e in pygame.event.get():
-            if e.type == pygame.USEREVENT:
-                # do stuff
-                print("pass")
-            elif e.type == pygame.QUIT:
-                run = False
-    pygame.display.flip()
-    timer.tick(60)
-    '''
+    
