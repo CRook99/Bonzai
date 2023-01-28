@@ -42,6 +42,11 @@ class Button:
 '''
 
 TREES = []
+SLOT_GRID = [[], [], []]
+
+SLOT_COORDS = [[(100, 100), (300, 100), (500, 100)], 
+                [(100, 300), (300, 300), (500, 300)], 
+                [(100, 500), (300, 500), (500, 500)]]
 
 
         
@@ -52,11 +57,21 @@ def drawWindow():
     WIN.blit(EXIT_ICON, (WIDTH - 50, 20))
     for tree in TREES:
         tree.drawTree(WIN)
+    for row in SLOT_GRID:
+        for slot in row:
+            slot.drawSlot(WIN)
     pygame.display.update()
 
 def main():
     tree1 = Tree(5, "Bonsai")
     TREES.append(tree1)
+
+    for i in range(3):
+        for j in range(3):
+            SLOT_GRID[i].append(Slot(*(SLOT_COORDS[i][j]))) 
+
+    print(SLOT_GRID)
+
 
     run = True
     while run:
