@@ -2,9 +2,16 @@ import pygame
 import os
 from tree import *
 from slot import *
+from pygame import mixer
 
 
 pygame.init()
+
+mixer.init()
+mixer.music.load('Assets/onion_song.mp3')
+mixer.music.set_volume(0.2)
+mixer.music.play()
+
 
 WIDTH, HEIGHT = 1500, 800
 WIN = pygame.display.set_mode((WIDTH,HEIGHT), pygame.RESIZABLE)
