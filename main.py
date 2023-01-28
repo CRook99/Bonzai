@@ -2,6 +2,7 @@ import pygame
 import os
 from tree import *
 from slot import *
+from market_slot import *
 from pygame import mixer
 
 
@@ -14,7 +15,7 @@ mixer.music.play()
 
 
 WIDTH, HEIGHT = 1500, 800
-WIN = pygame.display.set_mode((WIDTH,HEIGHT), pygame.RESIZABLE)
+WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Bonzai")
 
 SAND_COLOR = pygame.Color("#C2B280")
@@ -23,12 +24,13 @@ DARK_SAND_COLOR = pygame.Color("#85671C")
 BEEPUS = pygame.image.load(os.path.join("Assets", "beepus.png"))
 EXIT_ICON = pygame.image.load(os.path.join("Assets", "Exit Icon.png"))
 
-
+font = pygame.font.Font(None, 36)
 
 FRAMERATE = 60
 
- 
-'''
+BUTTONS = []
+
+
 class Button:
     def __init__(self, x, y, width, height, label):
         self.x = x
@@ -37,36 +39,74 @@ class Button:
         self.height = height
         self.label = label
         self.clicked = False
+        BUTTONS.append(self)
 
-    def draw(self, WIN, font, color=(255, 255, 255)):
-        pygame.draw.rect(surface, (255, 255, 255), (self.x, self.y, self.width, self.height), 2)
+    def draw(self, surface, font, color=(255, 255, 255)):
+        pygame.draw.rect(surface, (255, 255, 255),
+                         (self.x, self.y, self.width, self.height), 2)
         text = font.render(self.label, True, color)
-        surface.blit(text, (self.x + self.width // 2 - text.get_width() // 2, self.y + self.height // 2 - text.get_height() // 2))
+        WIN.blit(text, (self.x + self.width // 2 - text.get_width() //
+                 2, self.y + self.height // 2 - text.get_height() // 2))
 
     def is_clicked(self, pos):
         if self.x <= pos[0] <= self.x + self.width and self.y <= pos[1] <= self.y + self.height:
             self.clicked = True
-'''
+
 
 TREES = []
+SLOT_GRID = [[], [], []]
+
+SLOT_COORDS = [[(100, 100), (300, 100), (500, 100)], 
+                [(100, 300), (300, 300), (500, 300)], 
+                [(100, 500), (300, 500), (500, 500)]]
 
 
-        
+SEEDS = []
+MARKET_GRID = [[], []]
+
+MARKET_COORDS = [[(900, 100), (1000, 100), (1100, 100)], 
+                [(900, 200), (1000, 200), (1100, 200)]]
+
 
 def drawWindow():
     WIN.fill(SAND_COLOR)
-    WIN.blit(BEEPUS, (400,400))
+    WIN.blit(BEEPUS, (400, 400))
     WIN.blit(EXIT_ICON, (WIDTH - 50, 20))
     for tree in TREES:
         tree.drawTree(WIN)
+    for row in SLOT_GRID:
+        for slot in row:
+            slot.drawSlot(WIN)
+    for button in BUTTONS:
+        button.draw(WIN, font)
+    
+    #for seed in SEEDS:
+    #    seed.drawSeeds(WIN)
+    for row in MARKET_GRID:
+        for slot in row:
+            slot.drawSlot(WIN)
     pygame.display.update()
+
 
 def main():
     tree1 = Tree(5, "Bonsai")
     TREES.append(tree1)
 
-    pygame.time.set_timer(pygame.USEREVENT, 1000)
 
+    for i in range(3):
+        for j in range(3):
+            SLOT_GRID[i].append(Slot(*(SLOT_COORDS[i][j]))) 
+
+    print(SLOT_GRID)
+
+    for i in range(2):
+        for j in range(3):
+            MARKET_GRID[i].append(MarketSlot(*(MARKET_COORDS[i][j]))) 
+
+    print(MARKET_GRID)
+
+    pygame.time.set_timer(pygame.USEREVENT, 1000)
+    button = Button(1100, 550, 200, 50, "Fertilize!")
 
     run = True
     while run:
@@ -76,18 +116,22 @@ def main():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False # May use later
-                
+                run = False  # May use later
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
-
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                button.is_clicked(event.pos)
+                if button.clicked:
+                    print("Button clicked!")
+                    for tree in TREES:
+                        tree.fertilize(5)
 
             elif event.type == pygame.USEREVENT:
                 print("UE")
                 for tree in TREES:
                     tree.updateCounter()
-
 
         drawWindow()
 
@@ -96,4 +140,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
