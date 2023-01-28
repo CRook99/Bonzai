@@ -58,6 +58,9 @@ def main():
     tree1 = Tree(5, "Bonsai")
     TREES.append(tree1)
 
+    pygame.time.set_timer(pygame.USEREVENT, 1000)
+
+
     run = True
     while run:
         pygame.time.Clock().tick(FRAMERATE)
@@ -71,6 +74,12 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
+
+
+            elif event.type == pygame.USEREVENT:
+                print("UE")
+                for tree in TREES:
+                    tree.updateCounter()
 
 
         drawWindow()
