@@ -22,6 +22,8 @@ FRAMERATE = 60
 
 BUTTONS = []
 
+MONEY = 0
+
 
 class Button:
     def __init__(self, x, y, width, height, label):
@@ -46,25 +48,36 @@ class Button:
 
 
 TREES = []
+SALE = True
 
 
 def drawWindow():
     WIN.fill(SAND_COLOR)
     WIN.blit(BEEPUS, (400, 400))
     WIN.blit(EXIT_ICON, (WIDTH - 50, 20))
+
     for tree in TREES:
         tree.drawTree(WIN)
+        if not tree.button == None:
+            (tree.button).draw(WIN, font)
+
     for button in BUTTONS:
         button.draw(WIN, font)
+
+    moneyText = font.render(str(MONEY), True, (0, 0, 0))
+    WIN.blit(moneyText, (400, 400))
+
     pygame.display.update()
 
 
 def main():
+
+    global MONEY
     tree1 = Tree(5, "Bonsai")
     TREES.append(tree1)
 
     pygame.time.set_timer(pygame.USEREVENT, 1000)
-    button = Button(1100, 550, 200, 50, "Fertilize!")
+    fertlizeButton = Button(1100, 550, 200, 50, "Fertilize!")
 
     run = True
     while run:
@@ -80,9 +93,8 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     run = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                button.is_clicked(event.pos)
-                if button.clicked:
-                    print("Button clicked!")
+                fertlizeButton.is_clicked(event.pos)
+                if fertlizeButton.clicked:
                     for tree in TREES:
                         tree.fertilize(5)
 
@@ -90,6 +102,18 @@ def main():
                 print("UE")
                 for tree in TREES:
                     tree.updateCounter()
+                    if tree.getCounter() <= 0 and not tree.sold:
+                        # create button
+                        tree.createSellButton()
+
+            for tree in TREES:
+                if not tree.button == None:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        tree.button.is_clicked(event.pos)
+                        if (tree.button).clicked:
+                            tree.button = None
+                            MONEY += 5
+                            tree.sold = True
 
         drawWindow()
 

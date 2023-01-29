@@ -1,4 +1,5 @@
 import pygame
+from main import Button
 
 pygame.init()
 
@@ -8,6 +9,8 @@ class Tree:
     name = "X"
     counter = -1
     text = ""
+    button = None
+    sold = False
 
     def __init__(self, value, name):
         self.value = value
@@ -28,10 +31,18 @@ class Tree:
         screen.blit(self.font.render(text, True, (0, 0, 0)), (32, 48))
 
     def updateCounter(self):
-        self.counter -= 1
+        if self.counter > 0:
+            self.counter -= 1
 
     def fertilize(self, amount):
         self.counter -= amount
+
+    def getCounter(self):
+        return self.counter
+
+    def createSellButton(self):
+        self.button = Button(100, 100, 50, 50, 'Sell!')
+        sold = True
 
     '''
     run = True
