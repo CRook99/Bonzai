@@ -2,9 +2,17 @@ import pygame
 import os
 from tree import *
 from slot import *
+from market_slot import *
+from pygame import mixer
 
 
 pygame.init()
+
+mixer.init()
+mixer.music.load('Assets/onion_song.mp3')
+mixer.music.set_volume(0.2)
+mixer.music.play()
+
 
 WIDTH, HEIGHT = 1500, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
@@ -48,7 +56,18 @@ class Button:
 
 
 TREES = []
-SALE = True
+SLOT_GRID = [[], [], []]
+
+SLOT_COORDS = [[(100, 100), (300, 100), (500, 100)],
+               [(100, 300), (300, 300), (500, 300)],
+               [(100, 500), (300, 500), (500, 500)]]
+
+
+SEEDS = []
+MARKET_GRID = [[], []]
+
+MARKET_COORDS = [[(900, 100), (1000, 100), (1100, 100)],
+                 [(900, 200), (1000, 200), (1100, 200)]]
 
 
 def drawWindow():
@@ -67,6 +86,17 @@ def drawWindow():
     moneyText = font.render(str(MONEY), True, (0, 0, 0))
     WIN.blit(moneyText, (400, 400))
 
+    for row in SLOT_GRID:
+        for slot in row:
+            slot.drawSlot(WIN)
+    for button in BUTTONS:
+        button.draw(WIN, font)
+
+    # for seed in SEEDS:
+    #    seed.drawSeeds(WIN)
+    for row in MARKET_GRID:
+        for slot in row:
+            slot.drawSlot(WIN)
     pygame.display.update()
 
 
@@ -75,6 +105,18 @@ def main():
     global MONEY
     tree1 = Tree(5, "Bonsai")
     TREES.append(tree1)
+
+    for i in range(3):
+        for j in range(3):
+            SLOT_GRID[i].append(Slot(*(SLOT_COORDS[i][j])))
+
+    print(SLOT_GRID)
+
+    for i in range(2):
+        for j in range(3):
+            MARKET_GRID[i].append(MarketSlot(*(MARKET_COORDS[i][j])))
+
+    print(MARKET_GRID)
 
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     fertlizeButton = Button(1100, 550, 200, 50, "Fertilize!")
