@@ -1,6 +1,7 @@
 import pygame
 import os
 import math
+from main import Button
 
 pygame.init()
 
@@ -21,6 +22,8 @@ class Tree:
     COMPLETE = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Complete.png")), (128, 128))
 
     SPRITES = [DIRT, S1, S2, S3, S4, COMPLETE]
+    button = None
+    sold = False
 
     def __init__(self, value, name):
         self.value = value
@@ -42,7 +45,7 @@ class Tree:
         self.yPos = y
     
     def updateImage(self):
-        self.image = self.SPRITES[5 - (math.ceil((self.counter/self.totalTime) * 6) - 1)]
+        self.image = self.SPRITES[4 - (math.floor((self.counter/self.totalTime) * 6))]
 
     def drawTree(self, screen):
         text = str(self.counter).rjust(
@@ -51,8 +54,15 @@ class Tree:
         screen.blit(self.image, (self.xPos, self.yPos))
 
     def updateCounter(self):
-        self.counter -= 1
+        if self.counter > 0:
+            self.counter -= 1
 
     def fertilize(self, amount):
         self.counter -= amount
 
+    def getCounter(self):
+        return self.counter
+
+    def createSellButton(self):
+        self.button = Button(100, 100, 50, 50, 'Sell!')
+        sold = True
