@@ -50,30 +50,6 @@ BUTTONS = []
 
 MONEY = 10
 
-'''
-class Button:
-    def __init__(self, x, y, width, height, label, font, color):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.label = label
-        self.font = font
-        self.color = color
-        self.clicked = False
-        BUTTONS.append(self)
-
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), 2)
-        text = self.font.render(self.label, True, self.color)
-        WIN.blit(text, (self.x + self.width // 2 - text.get_width() //
-                 2, self.y + self.height // 2 - text.get_height() // 2))
-
-    def is_clicked(self, pos):
-        if self.x <= pos[0] <= self.x + self.width and self.y <= pos[1] <= self.y + self.height:
-            self.clicked = True
-
-'''
 
 TREES = []
 SLOT_GRID = [[], [], []]
@@ -147,19 +123,11 @@ def main():
     global MONEY
     global cursor_icon
     cursor_icon = None
-    tree1 = Tree(5, "Bonsai", 120)
-    TREES.append(tree1)
-
-    tree2 = Tree(6, "Elm", 300)
-    TREES.append(tree2)
-
 
     for i in range(3):
         for j in range(3):
             SLOT_GRID[i].append(Slot(*(SLOT_COORDS[i][j])))
 
-    SLOT_GRID[0][0].plantTree(tree1)
-    SLOT_GRID[1][2].plantTree(tree2)
 
     count = 0
     for i in range(2):
@@ -177,7 +145,14 @@ def main():
     BUTTONS.append(fertilizeButton)
     BUTTONS.append(exitButton)
 
-    cursor_icon = changeCursor(SUNSET_ICON)
+    heldSeed = None
+
+    numbo = 0
+
+    for row in SLOT_GRID:
+        for slot in row:
+            print(slot.rect.topleft)
+            print(slot.rect.bottomright)
 
     run = True
     while run:
@@ -197,14 +172,31 @@ def main():
                     if tree.getCounter() <= 0 and not tree.sold:
                         tree.createSellButton()
 
+            if heldSeed != None:
+                numbo += 1
+                for row in SLOT_GRID:
+                    for slot in row:
+                        if slot.drawSlot(WIN):
+                            print("clicked!!!")
+                            if MONEY >= heldSeed.cost:
+                                slot.plantTree(Tree(heldSeed.value, heldSeed.growthTime))
+                                MONEY -= heldSeed.cost
+                            else:
+                                pass
+                            heldSeed = None
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if cursor_icon != None:
                     cursor_icon = defaultCursor()
+                    heldSeed = None
 
             
             if fertilizeButton.draw(WIN):
                 for tree in TREES:
                     tree.fertilize(2)
+
+            
+                    
 
             if exitButton.draw(WIN):
                 run = False
@@ -213,10 +205,9 @@ def main():
             for seed in SEEDS:
                 if seed.draw(WIN):
                     cursor_icon = changeCursor(seed.image)
+                    heldSeed = seed
             
 
-
-            
             for tree in TREES:
                 if tree.button:
                     if tree.button.draw(WIN):

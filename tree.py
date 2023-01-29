@@ -30,9 +30,8 @@ class Tree:
     sold = False
     font = pygame.font.SysFont("bahnschrift", 20)
 
-    def __init__(self, value, name, growthTime):
+    def __init__(self, value, growthTime):
         self.value = value
-        self.name = name
         self.counter = growthTime - 1
         self.growthTime = growthTime
         self.text = str(self.counter - 1).rjust(3)
