@@ -1,7 +1,8 @@
 import pygame
 import os
 import math
-from main import Button, sellFont
+from button import *
+from main import sellFont
 
 pygame.init()
 
@@ -76,5 +77,5 @@ class Tree:
         return self.counter
 
     def createSellButton(self):
-        self.button = Button(self.xPos + 20, self.yPos + 110, 100, 60, 'Sell!', sellFont, (255, 255, 255))
+        self.button = TextButton(self.xPos + 20, self.yPos + 110, 100, 60, 'Sell!', sellFont, (255, 255, 255))
         sold = True

@@ -2,6 +2,7 @@ import pygame
 import os
 from tree import *
 from slot import *
+from button import *
 from market_slot import *
 from pygame import mixer
 
@@ -34,7 +35,7 @@ BUTTONS = []
 
 MONEY = 0
 
-
+'''
 class Button:
     def __init__(self, x, y, width, height, label, font, color):
         self.x = x
@@ -57,6 +58,7 @@ class Button:
         if self.x <= pos[0] <= self.x + self.width and self.y <= pos[1] <= self.y + self.height:
             self.clicked = True
 
+'''
 
 TREES = []
 SLOT_GRID = [[], [], []]
@@ -76,7 +78,6 @@ MARKET_COORDS = [[(900, 100), (1050, 100), (1200, 100)],
 def drawWindow():
     WIN.fill(SAND_COLOR)
     WIN.blit(BEEPUS, (700, 500))
-    WIN.blit(EXIT_ICON, (WIDTH - 100, 20))
 
     for tree in TREES:
         #tree.updateImage()
@@ -132,7 +133,10 @@ def main():
 
 
     pygame.time.set_timer(pygame.USEREVENT, 1000)
-    fertlizeButton = Button(1100, 550, 200, 50, "Fertilize!", fertilizeFont, (255, 255, 255))
+    fertilizeButton = TextButton(1100, 550, 200, 50, "Fertilize!", fertilizeFont, (255, 255, 255))
+    exitButton = ImageButton(WIDTH - 100, 20, EXIT_ICON)
+    BUTTONS.append(fertilizeButton)
+    BUTTONS.append(exitButton)
 
     run = True
     while run:
@@ -145,29 +149,31 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                fertlizeButton.is_clicked(event.pos)
-                if fertlizeButton.clicked:
-                    for tree in TREES:
-                        tree.fertilize(5)
 
             elif event.type == pygame.USEREVENT:
                 for tree in TREES:
                     tree.updateCounter()
                     if tree.getCounter() <= 0 and not tree.sold:
-                        # create button
                         tree.createSellButton()
+
+            
+            if fertilizeButton.draw(WIN):
+                for tree in TREES:
+                    tree.fertilize(2)
+
+            if exitButton.draw(WIN):
+                run = False
+
             
             for tree in TREES:
-                if not tree.button == None:
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        tree.button.is_clicked(event.pos)
-                        if (tree.button).clicked:
-                            tree.button = None
-                            MONEY += 5
-                            tree.sold = True
-                            del tree
-        
+                if tree.button:
+                    if tree.button.draw(WIN):
+                        tree.button = None
+                        MONEY += 5
+                        tree.sold = True
+                        del tree
+
+                  
 
         drawWindow()
 
