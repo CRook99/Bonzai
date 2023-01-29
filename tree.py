@@ -1,7 +1,7 @@
 import pygame
 import os
 import math
-from main import Button
+from main import Button, sellFont
 
 pygame.init()
 
@@ -15,16 +15,19 @@ class Tree:
     yPos = -1
     growthTime = -1
     
+    # Sprites
     DIRT = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Dirt Pile.png")), (128, 128))
     S1 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 1.png")), (128, 128))
     S2 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 2.png")), (128, 128))
     S3 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 3.png")), (128, 128))
     S4 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 4.png")), (128, 128))
     COMPLETE = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Complete.png")), (128, 128))
-
     SPRITES = [DIRT, S1, S2, S3, S4, COMPLETE]
+
+    # Graphics
     button = None
     sold = False
+    font = pygame.font.SysFont("bahnschrift", 20)
 
     def __init__(self, value, name, growthTime):
         self.value = value
@@ -33,7 +36,6 @@ class Tree:
         self.growthTime = growthTime
         self.text = str(self.counter - 1).rjust(3)
         pygame.time.set_timer(pygame.USEREVENT, 1000)
-        self.font = pygame.font.SysFont('Consolas', 12)
         self.image = self.DIRT
 
     def getValue(self):
@@ -60,7 +62,7 @@ class Tree:
     def drawTree(self, screen):
         text = str(self.counter).rjust(
             3) if self.counter > 0 else 'Growth Complete!'
-        screen.blit(self.font.render(text, True, (0, 0, 0)), (self.xPos, self.yPos + 25))
+        screen.blit(self.font.render(text, True, (0, 0, 0)), (self.xPos - 10, self.yPos - 10))
         screen.blit(self.image, (self.xPos, self.yPos))
 
     def updateCounter(self):
@@ -74,5 +76,5 @@ class Tree:
         return self.counter
 
     def createSellButton(self):
-        self.button = Button(self.xPos + 35, self.yPos + 110, 50, 50, 'Sell!')
+        self.button = Button(self.xPos + 20, self.yPos + 110, 100, 60, 'Sell!', sellFont, (255, 255, 255))
         sold = True

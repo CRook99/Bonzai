@@ -21,10 +21,12 @@ pygame.display.set_caption("Bonzai")
 SAND_COLOR = pygame.Color("#C2B280")
 DARK_SAND_COLOR = pygame.Color("#85671C")
 
-BEEPUS = pygame.image.load(os.path.join("Assets", "beepus.png"))
+BEEPUS = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "beepus.png")), (150,150))
 EXIT_ICON = pygame.image.load(os.path.join("Assets", "Exit Icon.png"))
 
-font = pygame.font.Font(None, 36)
+fertilizeFont = pygame.font.SysFont("bahnschrift", 36)
+sellFont = pygame.font.SysFont("bahnschrift", 24)
+moneyFont = pygame.font.SysFont("bahnschrift", 30)
 
 FRAMERATE = 60
 
@@ -34,19 +36,20 @@ MONEY = 0
 
 
 class Button:
-    def __init__(self, x, y, width, height, label):
+    def __init__(self, x, y, width, height, label, font, color):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.label = label
+        self.font = font
+        self.color = color
         self.clicked = False
         BUTTONS.append(self)
 
-    def draw(self, surface, font, color=(255, 255, 255)):
-        pygame.draw.rect(surface, (255, 255, 255),
-                         (self.x, self.y, self.width, self.height), 2)
-        text = font.render(self.label, True, color)
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height), 2)
+        text = self.font.render(self.label, True, self.color)
         WIN.blit(text, (self.x + self.width // 2 - text.get_width() //
                  2, self.y + self.height // 2 - text.get_height() // 2))
 
@@ -66,26 +69,27 @@ SLOT_COORDS = [[(100, 100), (300, 100), (500, 100)],
 SEEDS = []
 MARKET_GRID = [[], []]
 
-MARKET_COORDS = [[(900, 100), (1000, 100), (1100, 100)],
-                 [(900, 200), (1000, 200), (1100, 200)]]
+MARKET_COORDS = [[(900, 100), (1050, 100), (1200, 100)],
+                 [(900, 250), (1050, 250), (1200, 250)]]
 
 
 def drawWindow():
     WIN.fill(SAND_COLOR)
-    WIN.blit(BEEPUS, (400, 400))
-    WIN.blit(EXIT_ICON, (WIDTH - 50, 20))
+    WIN.blit(BEEPUS, (700, 500))
+    WIN.blit(EXIT_ICON, (WIDTH - 100, 20))
 
     for tree in TREES:
         #tree.updateImage()
         #tree.drawTree(WIN)
         if not tree.button == None:
-            (tree.button).draw(WIN, font)
+            (tree.button).draw(WIN)
 
     for button in BUTTONS:
-        button.draw(WIN, font)
+        button.draw(WIN)
+        
 
-    moneyText = font.render(str(MONEY), True, (0, 0, 0))
-    WIN.blit(moneyText, (400, 400))
+    moneyText = moneyFont.render(f"${str(MONEY)}", True, (0, 0, 0))
+    WIN.blit(moneyText, (950, 600))
 
     for row in SLOT_GRID:
         for slot in row:
@@ -94,16 +98,14 @@ def drawWindow():
                 if slot.tree.sold == False:
                     slot.tree.updateImage()
                     slot.tree.drawTree(WIN)
-                    #slot.tree.button.draw(WIN, font)
                 else:
                     slot.image.set_alpha(255)
 
 
-    # for seed in SEEDS:
-    #    seed.drawSeeds(WIN)
     for row in MARKET_GRID:
         for slot in row:
             slot.drawSlot(WIN)
+
     pygame.display.update()
 
 
@@ -128,15 +130,13 @@ def main():
         for j in range(3):
             MARKET_GRID[i].append(MarketSlot(*(MARKET_COORDS[i][j])))
 
-    print(MARKET_GRID)
 
     pygame.time.set_timer(pygame.USEREVENT, 1000)
-    fertlizeButton = Button(1100, 550, 200, 50, "Fertilize!")
+    fertlizeButton = Button(1100, 550, 200, 50, "Fertilize!", fertilizeFont, (255, 255, 255))
 
     run = True
     while run:
         pygame.time.Clock().tick(FRAMERATE)
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -152,7 +152,6 @@ def main():
                         tree.fertilize(5)
 
             elif event.type == pygame.USEREVENT:
-                print("UE")
                 for tree in TREES:
                     tree.updateCounter()
                     if tree.getCounter() <= 0 and not tree.sold:
@@ -168,19 +167,7 @@ def main():
                             MONEY += 5
                             tree.sold = True
                             del tree
-                            
-            '''
-            for row in SLOT_GRID:
-                for slot in row:
-                    if slot.tree != None:
-                        if not slot.tree.button == None:
-                            if event.type == pygame.MOUSEBUTTONDOWN:
-                                slot.tree.button.is_clicked(event.pos)
-                                if (slot.tree.button).clicked:
-                                    MONEY += 5
-                                    tree.sold = True
-                                    del tree
-            '''
+        
 
         drawWindow()
 
