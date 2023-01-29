@@ -13,6 +13,7 @@ class Tree:
     text = ""
     xPos = -1
     yPos = -1
+    growthTime = -1
     
     DIRT = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Dirt Pile.png")), (128, 128))
     S1 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 1.png")), (128, 128))
@@ -25,11 +26,12 @@ class Tree:
     button = None
     sold = False
 
-    def __init__(self, value, name):
+    def __init__(self, value, name, growthTime):
         self.value = value
         self.name = name
-        self.counter, self.text = 120, '120'.rjust(3)
-        self.totalTime = self.counter
+        self.counter = growthTime - 1
+        self.growthTime = growthTime
+        self.text = str(self.counter - 1).rjust(3)
         pygame.time.set_timer(pygame.USEREVENT, 1000)
         self.font = pygame.font.SysFont('Consolas', 12)
         self.image = self.DIRT
@@ -45,8 +47,16 @@ class Tree:
         self.yPos = y
     
     def updateImage(self):
-        self.image = self.SPRITES[4 - (math.floor((self.counter/self.totalTime) * 6))]
+        x = self.growthTime // 6
+        THENUMBER = self.growthTime - self.counter
+        
+        list_a = [range(0, x), range(x, 2*x), range(2*x, 3*x), range(3*x, 4*x), range(4*x, 5*x), range(5*x, self.growthTime)]
 
+        for i in range(6):
+            if THENUMBER in list_a[i]:
+                self.image = self.SPRITES[i]
+
+        
     def drawTree(self, screen):
         text = str(self.counter).rjust(
             3) if self.counter > 0 else 'Growth Complete!'
@@ -64,5 +74,5 @@ class Tree:
         return self.counter
 
     def createSellButton(self):
-        self.button = Button(100, 100, 50, 50, 'Sell!')
+        self.button = Button(self.xPos + 35, self.yPos + 110, 50, 50, 'Sell!')
         sold = True

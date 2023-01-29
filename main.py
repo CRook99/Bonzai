@@ -76,8 +76,8 @@ def drawWindow():
     WIN.blit(EXIT_ICON, (WIDTH - 50, 20))
 
     for tree in TREES:
-        tree.updateImage()
-        tree.drawTree(WIN)
+        #tree.updateImage()
+        #tree.drawTree(WIN)
         if not tree.button == None:
             (tree.button).draw(WIN, font)
 
@@ -90,8 +90,14 @@ def drawWindow():
     for row in SLOT_GRID:
         for slot in row:
             slot.drawSlot(WIN)
-    for button in BUTTONS:
-        button.draw(WIN, font)
+            if slot.tree != None:
+                if slot.tree.sold == False:
+                    slot.tree.updateImage()
+                    slot.tree.drawTree(WIN)
+                    #slot.tree.button.draw(WIN, font)
+                else:
+                    slot.image.set_alpha(255)
+
 
     # for seed in SEEDS:
     #    seed.drawSeeds(WIN)
@@ -104,10 +110,10 @@ def drawWindow():
 def main():
 
     global MONEY
-    tree1 = Tree(5, "Bonsai")
+    tree1 = Tree(5, "Bonsai", 120)
     TREES.append(tree1)
 
-    tree2 = Tree(6, "Elm")
+    tree2 = Tree(6, "Elm", 300)
     TREES.append(tree2)
 
 
@@ -152,7 +158,7 @@ def main():
                     if tree.getCounter() <= 0 and not tree.sold:
                         # create button
                         tree.createSellButton()
-
+            
             for tree in TREES:
                 if not tree.button == None:
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -161,6 +167,20 @@ def main():
                             tree.button = None
                             MONEY += 5
                             tree.sold = True
+                            del tree
+                            
+            '''
+            for row in SLOT_GRID:
+                for slot in row:
+                    if slot.tree != None:
+                        if not slot.tree.button == None:
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                slot.tree.button.is_clicked(event.pos)
+                                if (slot.tree.button).clicked:
+                                    MONEY += 5
+                                    tree.sold = True
+                                    del tree
+            '''
 
         drawWindow()
 
