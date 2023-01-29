@@ -4,6 +4,7 @@ from tree import *
 from slot import *
 from button import *
 from market_slot import *
+from seed import *
 from pygame import mixer
 
 
@@ -29,11 +30,25 @@ fertilizeFont = pygame.font.SysFont("bahnschrift", 36)
 sellFont = pygame.font.SysFont("bahnschrift", 24)
 moneyFont = pygame.font.SysFont("bahnschrift", 30)
 
+CLASSIC_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Classic Bonsai Seed.png")), (96,96))
+WINTER_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Winter Bonsai Seed.png")), (96,96))
+CHERRY_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Cherry Bonsai Seed.png")), (96,96))
+ECLIPSE_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Eclipse Bonsai Seed.png")), (96,96))
+SUNSET_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Sunset Bonsai Seed.png")), (96,96))
+ROYAL_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Royal Bonsai Seed.png")), (96,96))
+
+CLASSIC_SEED = (120, 5, 10, CLASSIC_ICON)
+WINTER_SEED = (300, 25, 50, WINTER_ICON)
+CHERRY_SEED = (1000, 100, 250, CHERRY_ICON)
+ECLIPSE_SEED = (2500, 500, 750, ECLIPSE_ICON)
+SUNSET_SEED = (10000, 2000, 5000, SUNSET_ICON)
+ROYAL_SEED = (50000, 20000, 50000, ROYAL_ICON)
+
 FRAMERATE = 60
 
 BUTTONS = []
 
-MONEY = 0
+MONEY = 10
 
 '''
 class Button:
@@ -69,6 +84,7 @@ SLOT_COORDS = [[(100, 100), (300, 100), (500, 100)],
 
 
 SEEDS = []
+SEED_TUPLES = [CLASSIC_SEED, WINTER_SEED, CHERRY_SEED, ECLIPSE_SEED, SUNSET_SEED, ROYAL_SEED]
 MARKET_GRID = [[], []]
 
 MARKET_COORDS = [[(900, 100), (1050, 100), (1200, 100)],
@@ -105,14 +121,32 @@ def drawWindow():
 
     for row in MARKET_GRID:
         for slot in row:
-            slot.drawSlot(WIN)
+            if slot.seed != None:
+                slot.seed.draw(WIN)
+            else:
+                slot.drawSlot(WIN)
+
+    if cursor_icon != None:
+        cursor_img_rect = cursor_icon.get_rect()
+        cursor_img_rect.center = pygame.mouse.get_pos()
+        WIN.blit(cursor_icon, cursor_img_rect.center)
 
     pygame.display.update()
+
+def changeCursor(icon):
+    pygame.mouse.set_visible(False)
+    return icon
+
+def defaultCursor():
+    pygame.mouse.set_visible(True)
+    return None
 
 
 def main():
 
     global MONEY
+    global cursor_icon
+    cursor_icon = None
     tree1 = Tree(5, "Bonsai", 120)
     TREES.append(tree1)
 
@@ -127,9 +161,14 @@ def main():
     SLOT_GRID[0][0].plantTree(tree1)
     SLOT_GRID[1][2].plantTree(tree2)
 
+    count = 0
     for i in range(2):
         for j in range(3):
             MARKET_GRID[i].append(MarketSlot(*(MARKET_COORDS[i][j])))
+            seed = Seed(*(SEED_TUPLES[count]))
+            SEEDS.append(seed)
+            MARKET_GRID[i][j].giveSeed(seed)
+            count += 1
 
 
     pygame.time.set_timer(pygame.USEREVENT, 1000)
@@ -137,6 +176,8 @@ def main():
     exitButton = ImageButton(WIDTH - 100, 20, EXIT_ICON)
     BUTTONS.append(fertilizeButton)
     BUTTONS.append(exitButton)
+
+    cursor_icon = changeCursor(SUNSET_ICON)
 
     run = True
     while run:
@@ -156,6 +197,10 @@ def main():
                     if tree.getCounter() <= 0 and not tree.sold:
                         tree.createSellButton()
 
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if cursor_icon != None:
+                    cursor_icon = defaultCursor()
+
             
             if fertilizeButton.draw(WIN):
                 for tree in TREES:
@@ -163,6 +208,13 @@ def main():
 
             if exitButton.draw(WIN):
                 run = False
+
+            
+            for seed in SEEDS:
+                if seed.draw(WIN):
+                    cursor_icon = changeCursor(seed.image)
+            
+
 
             
             for tree in TREES:
