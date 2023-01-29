@@ -59,6 +59,7 @@ def drawWindow():
     WIN.blit(BEEPUS, (400, 400))
     WIN.blit(EXIT_ICON, (WIDTH - 50, 20))
     for tree in TREES:
+        tree.updateImage()
         tree.drawTree(WIN)
     for row in SLOT_GRID:
         for slot in row:
@@ -72,12 +73,16 @@ def main():
     tree1 = Tree(5, "Bonsai")
     TREES.append(tree1)
 
+    tree2 = Tree(6, "Elm")
+    TREES.append(tree2)
+
 
     for i in range(3):
         for j in range(3):
             SLOT_GRID[i].append(Slot(*(SLOT_COORDS[i][j]))) 
 
-    print(SLOT_GRID)
+    SLOT_GRID[0][0].plantTree(tree1)
+    SLOT_GRID[1][2].plantTree(tree2)
 
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     button = Button(1100, 550, 200, 50, "Fertilize!")
@@ -86,7 +91,6 @@ def main():
     while run:
         pygame.time.Clock().tick(FRAMERATE)
 
-        tree1.drawTree(WIN)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
