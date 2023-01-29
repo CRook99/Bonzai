@@ -5,6 +5,7 @@ from slot import *
 from button import *
 from market_slot import *
 from seed import *
+from sprites import SPRITES, CB_SPRITES, WB_SPRITES, EB_SPRITES, SB_SPRITES, RB_SPRITES
 from pygame import mixer
 
 
@@ -37,12 +38,12 @@ ECLIPSE_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "
 SUNSET_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Sunset Bonsai Seed.png")), (96,96))
 ROYAL_ICON = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Royal Bonsai Seed.png")), (96,96))
 
-CLASSIC_SEED = (120, 5, 10, CLASSIC_ICON)
-WINTER_SEED = (300, 25, 50, WINTER_ICON)
-CHERRY_SEED = (1000, 100, 250, CHERRY_ICON)
-ECLIPSE_SEED = (2500, 500, 750, ECLIPSE_ICON)
-SUNSET_SEED = (10000, 2000, 5000, SUNSET_ICON)
-ROYAL_SEED = (50000, 20000, 50000, ROYAL_ICON)
+CLASSIC_SEED = ('classic', 120, 5, 10, CLASSIC_ICON)
+WINTER_SEED = ('winter', 300, 25, 50, WINTER_ICON)
+CHERRY_SEED = ('cherry', 1000, 100, 250, CHERRY_ICON)
+ECLIPSE_SEED = ('eclipse', 2500, 500, 750, ECLIPSE_ICON)
+SUNSET_SEED = ('sunset', 10000, 2000, 5000, SUNSET_ICON)
+ROYAL_SEED = ('royal', 50000, 20000, 50000, ROYAL_ICON)
 
 FRAMERATE = 60
 
@@ -61,6 +62,9 @@ SLOT_COORDS = [[(100, 100), (300, 100), (500, 100)],
 
 SEEDS = []
 SEED_TUPLES = [CLASSIC_SEED, WINTER_SEED, CHERRY_SEED, ECLIPSE_SEED, SUNSET_SEED, ROYAL_SEED]
+SEED_SPRITE_DICT = {'classic': SPRITES, 'winter': WB_SPRITES, 'cherry': CB_SPRITES, 
+                    'eclipse': EB_SPRITES, 'sunset': SB_SPRITES, 'royal': RB_SPRITES}
+
 MARKET_GRID = [[], []]
 
 MARKET_COORDS = [[(900, 100), (1050, 100), (1200, 100)],
@@ -72,8 +76,6 @@ def drawWindow():
     WIN.blit(BEEPUS, (700, 500))
 
     for tree in TREES:
-        #tree.updateImage()
-        #tree.drawTree(WIN)
         if not tree.button == None:
             (tree.button).draw(WIN)
 
@@ -138,6 +140,8 @@ def main():
             MARKET_GRID[i][j].giveSeed(seed)
             count += 1
 
+    BEEPUS.set_alpha(0)
+
 
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     fertilizeButton = TextButton(1100, 550, 200, 50, "Fertilize!", fertilizeFont, (255, 255, 255))
@@ -146,13 +150,6 @@ def main():
     BUTTONS.append(exitButton)
 
     heldSeed = None
-
-    numbo = 0
-
-    for row in SLOT_GRID:
-        for slot in row:
-            print(slot.rect.topleft)
-            print(slot.rect.bottomright)
 
     run = True
     while run:
@@ -165,6 +162,10 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
+                elif event.key == pygame.K_m:
+                    MONEY += 10000
+                elif event.key == pygame.K_b:
+                    BEEPUS.set_alpha(255)
 
             elif event.type == pygame.USEREVENT:
                 for tree in TREES:
@@ -173,14 +174,13 @@ def main():
                         tree.createSellButton()
 
             if heldSeed != None:
-                numbo += 1
                 for row in SLOT_GRID:
                     for slot in row:
                         if slot.drawSlot(WIN):
-                            print("clicked!!!")
                             if MONEY >= heldSeed.cost:
-                                slot.plantTree(Tree(heldSeed.value, heldSeed.growthTime))
+                                slot.plantTree(Tree(heldSeed.value, heldSeed.growthTime, SEED_SPRITE_DICT[heldSeed.name]))
                                 MONEY -= heldSeed.cost
+                                TREES.append(slot.tree)
                             else:
                                 pass
                             heldSeed = None
@@ -212,7 +212,7 @@ def main():
                 if tree.button:
                     if tree.button.draw(WIN):
                         tree.button = None
-                        MONEY += 5
+                        MONEY += tree.value
                         tree.sold = True
                         del tree
 

@@ -17,26 +17,30 @@ class Tree:
     growthTime = -1
     
     # Sprites
+    '''
     DIRT = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Dirt Pile.png")), (128, 128))
     S1 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 1.png")), (128, 128))
     S2 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 2.png")), (128, 128))
     S3 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 3.png")), (128, 128))
     S4 = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Stage 4.png")), (128, 128))
     COMPLETE = pygame.transform.scale(pygame.image.load(os.path.join("Assets", "Complete.png")), (128, 128))
-    SPRITES = [DIRT, S1, S2, S3, S4, COMPLETE]
+    '''
+    SPRITES = None
 
     # Graphics
     button = None
     sold = False
     font = pygame.font.SysFont("bahnschrift", 20)
 
-    def __init__(self, value, growthTime):
+    def __init__(self, value, growthTime, sprites):
         self.value = value
         self.counter = growthTime - 1
         self.growthTime = growthTime
         self.text = str(self.counter - 1).rjust(3)
         pygame.time.set_timer(pygame.USEREVENT, 1000)
-        self.image = self.DIRT
+        self.SPRITES = sprites
+        self.image = self.SPRITES[0]
+        
 
     def getValue(self):
         return self.value

@@ -5,7 +5,8 @@ class Seed:
     xPos = -1
     yPos = -1
 
-    def __init__(self, growthTime, cost, value, image):
+    def __init__(self, name, growthTime, cost, value, image):
+        self.name = name
         self.growthTime = growthTime
         self.cost = cost
         self.value = value
